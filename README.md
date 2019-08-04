@@ -63,10 +63,6 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
 
 ## Test environment
 
-### uname -a
-
-    Linux s76dad 4.4.0-157-generic #185-Ubuntu SMP Tue Jul 23 09:17:01 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
-
 ### gfortran --version
 
     GNU Fortran (Ubuntu 5.4.0-6ubuntu1~16.04.11) 5.4.0 20160609
@@ -76,6 +72,24 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
     You may redistribute copies of GNU Fortran
     under the terms of the GNU General Public License.
     For more information about these matters, see the file named COPYING
+
+### uname -a
+
+    Linux s76dad 4.4.0-157-generic #185-Ubuntu SMP Tue Jul 23 09:17:01 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+### /etc/os-release
+
+    NAME="Ubuntu"
+    VERSION="16.04.6 LTS (Xenial Xerus)"
+    ID=ubuntu
+    ID_LIKE=debian
+    PRETTY_NAME="Ubuntu 16.04.6 LTS"
+    VERSION_ID="16.04"
+    HOME_URL="http://www.ubuntu.com/"
+    SUPPORT_URL="http://help.ubuntu.com/"
+    BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+    VERSION_CODENAME=xenial
+    UBUNTU_CODENAME=xenial
 
 ## Caveat
 
