@@ -176,7 +176,7 @@ C     CCMORE i.e. from STMT(CCMORE) and STMT(CCMORE+1)
 
       IF (HASH.GE.ML) HASH = 0
 
-C     PArameter:  P=10; A=7; HASH=10+7=17
+C     Hash of PA(RAMETER):  P=10; A=7; HASH=10+7=17
       IF(HASH .NE. 17) THEN
          STOP 'HASH is not 17'
       ENDIF
