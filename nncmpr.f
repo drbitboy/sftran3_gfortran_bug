@@ -1,79 +1,95 @@
       logical function NNCMPR (A, I, B, J, N)
-c>> 1989-01-13 W. V. Snyder at JPL.  Replace CHCODE by CMPMAP.
-c
-c     This subprogram is designed to run on any machine that uses
-c     integers in the range 0..255 to represent characters.  This
-c     EXCLUDES certain antique CDC systems that use 6 and 12 bit codes
-c     to represent lower case letters.
-c
-c     Compare two Fortran 77 character strings of length N.  Return
-c     .TRUE. if they are equal, and .FALSE. if they are unequal.
-c
-c     Characters from the two strings are deemed to be equal if they are
-c     the same character, or if they are both letters and one is upper
-c     case while the other is lower case.
-c
-c     One string begins in the array A at location I, and the other
-c     begins in the array B at location J.
-c
-c A       contains the first character string.
-c B       contains the second character string.
-c I       is the position in A at which the first string begins.
-c J       is the position in B at which the second string begins.
-c N       is the length of strings to compare.
-c
-      character A(*), B(*)
-      integer I, J, N
-c CMPMAP is indexed by the ordinal value of a character, that is,
-c        ICHAR(C).  If two values of CMPMAP are equal, the characters
-c        that indexed the two equal values are to be considered to be
-c        equal.  Furthermore, the elements of CMPMAP that are indexed by
-c        the ordinal values of letters are positive, while others are
-c        negative.  Since CMPMAP is indexed by the ordinal value or a
-c        character, it might be necessary to change the dimension of
-c        CMPMAP on some antique CDC systems that use 6 or 12 bit codes
-c        to represent lower case letters and some punctuation marks.
-c        CMPMAP is set in BATOP2.
+C>> 1989-01-13 W. V. Snyder at JPL.  Replace CHCODE by CMPMAP.
+C
+C     This subprogram is designed to run on any machine that uses
+C     integers in the range 0..255 to represent characters.  This
+C     EXCLUDES certain antique CDC systems that use 6 and 12 bit codes
+C     to represent lower case letters.
+C
+C     Compare two Fortran 77 character strings of length N.  Return
+C     .TRUE. if they are equal, and .FALSE. if they are unequal.
+C
+C     Characters from the two strings are deemed to be equal if they are
+C     the same character, or if they are both letters and one is upper
+C     case while the other is lower case.
+C
+C     One string begins in the array A at location I, and the other
+C     begins in the array B at location J.
+C
+C A       contains the first character string.
+C B       contains the second character string.
+C I       is the position in A at which the first string begins.
+C J       is the position in B at which the second string begins.
+C N       is the length of strings to compare.
+C
+      CHARACTER A(*), B(*)
+      INTEGER I, J, N
+C CMPMAP is indexed by the ordinal value of a character, that is,
+C        ICHAR(C).  If two values of CMPMAP are equal, the characters
+C        that indexed the two equal values are to be considered to be
+C        equal.  Furthermore, the elements of CMPMAP that are indexed by
+C        the ordinal values of letters are positive, while others are
+C        negative.  Since CMPMAP is indexed by the ordinal value or a
+C        character, it might be necessary to change the dimension of
+C        CMPMAP on some antique CDC systems that use 6 or 12 bit codes
+C        to represent lower case letters and some punctuation marks.
+C        CMPMAP is set in BATOP2.
       INTEGER CMPMAP(0:255)
-c
-c     *****     Variables Used     *************************************
-c
-c ACH     is a character from the string in A.
-c AIX     is the index into the string in A.
-c BCH     is a character from the string in B.
-c BIX     is the index into the string in B.
-c L       is the loop counter.
-c CMPMAP  is used to indicate whether two characters are to be
-c         considered to be the same.  For characters that must match
-c         exactly, CMPMAP(I) = -I, where I = ICHAR(C).  If two
-c         characters can be the same, as for example the lower and upper
-c         case instances of the same letter, simply make MAP(I) = J for
-c         both of them, where J is the position of the letter in the
-c         alphabet (starting at 1 for "a").  This mapping is used in
-c         DDLABL to generate a case selector.
-c
-      character ACH, BCH
-      integer AIX, BIX, L
+C
+C     *****     Variables Used     *************************************
+C
+C ACH     is a character from the string in A.
+C AIX     is the index into the string in A.
+C BCH     is a character from the string in B.
+C BIX     is the index into the string in B.
+C L       is the loop counter.
+C CMPMAP  is used to indicate whether two characters are to be
+C         considered to be the same.  For characters that must match
+C         exactly, CMPMAP(I) = -I, where I = ICHAR(C).  If two
+C         characters can be the same, as for example the lower and upper
+C         case instances of the same letter, simply make MAP(I) = J for
+C         both of them, where J is the position of the letter in the
+C         alphabet (starting at 1 for "a").  This mapping is used in
+C         DDLABL to generate a case selector.
+C
+      CHARACTER ACH, BCH
+      INTEGER AIX, BIX, L
       COMMON /C28/ CMPMAP
-c
-c     *****     Executable Statements     ******************************
-c
-      aix = i
-      bix = j
-      DO 20002 l = 1, n
-         ach = a(aix)
-         bch = b(bix)
+C
+C     *****     Executable Statements     ******************************
+C
+C     Copy I and J to local variables so callers I and J will not change
+      AIX = I
+      BIX = J
+
+C     Loop over first N characters in A and in B
+      DO L = 1, N
+
+C        Get characters at corresponding positions in A and B
+         ach = a(AIX)
+         bch = b(BIX)
+
+C        Test if characters are a case-sensitive match
          IF(ach.ne.bch)THEN
-           IF(cmpmap(ichar(ach)).ne.cmpmap(ichar(bch)))THEN
-               nncmpr = .FALSE.
-               return
-           END IF
+C           If not a case-sensitive match, test if characters are a
+C           case-insensitive match
+            IF(cmpmap(ichar(ach)).ne.cmpmap(ichar(bch)))THEN
+C              This character in A does not match the corresponding
+C              character in B; return .FALSE. indicating no match
+               NNCMPR = .FALSE.
+               RETURN
+            END IF
          END IF
-         aix=aix+1
-         bix=bix+1
-20002    CONTINUE
-      nncmpr = .TRUE.
-c
-      return
-c
+
+C        The current characters match; move to next positions
+         AIX=AIX+1
+         BIX=BIX+1
+
+      ENDDO
+
+C     N characters in A starting at J match N characters in B starting
+C     at J; return .TRUE. indicating a match
+      NNCMPR = .TRUE.
+      RETURN
+
       end                 
