@@ -14,6 +14,8 @@
 
 MYFFLAGS=-DARGRTN=1
 
+gfortran_FLAGS=
+
 
 ### FORTRAN flags
 
@@ -52,6 +54,6 @@ y_g77:
 	g77 -x f77-cpp-input $(FFLAGS) $(SRCS) -o $@.e $(g77_FLIBS)
 
 y_gfortran:
-	gfortran -cpp -std=legacy $(FFLAGS) $(SRCS) -o $@.e
+	gfortran -cpp -std=legacy $(FFLAGS) $(gfortran_FFLAGS) $(SRCS) -o $@.e
 
 ########################################################################

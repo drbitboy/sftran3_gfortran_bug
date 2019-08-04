@@ -93,7 +93,151 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
 
 ## Caveat
 
-Unfortunately, I don't have time at present to debug this and submit a patch to GFORTRAN, which would be my preferred route.
-
+Unfortunately, I don't have time at present to fully debug this and submit a patch to GFORTRAN, which would be my preferred route.  However, see Analysis below
 
 Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
+
+# Analysis
+
+## Parallel diff of assembly code for failing vs. successful cases
+
+    ========================================================================                        ========================================================================
+    ===> FAILing compiled assembly for ncscan.f on the left                                         ===> SUCCESful compiled assembly for ncscan.f on the right
+    ===> - Compiled with gfortran MYFFLAGS=-DARGRTN ...                                             ===> - Compiled with gfortran MYFFLAGS= ...
+    ========================================================================                        ========================================================================
+
+### Relevant sections of FORTRAN code from ncscan.f
+
+
+    108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)                                                108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)
+    109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)                                    109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)
+
+
+    117          IF (.NOT.(NCSCAN)) GO TO 20014                                                   | 125       IF (.NOT.(NCSCAN)) RETURN
+
+
+### Edited but relevant sections of assembly code derived from ncscan.f compilation
+
+
+    .LBB2:                                                                                          .LBB2:
+
+#### Start assembly code for FORTRAN line 109:  put variable [more] from COMMON C04 into register eax
+
+            .loc 1 30 0                                                                                     .loc 1 30 0
+            mov     eax, DWORD PTR c04_[rip+16]     # D.XXXX, c04.more                                      mov     eax, DWORD PTR c04_[rip+16]     # D.XXXX, c04.more
+
+#### Test eax (AND eax with itself, jump to .L5 if eax, i.e. [more], is .FALSE.
+
+            test    eax, eax        # D.XXXX                                                                test    eax, eax        # D.XXXX
+            je      .L5     #,                                                                              je      .L5     #,
+
+#### Put [CCMORE+N-1] into edx
+
+            mov     rax, QWORD PTR [rbp-40] # tmpXXX, n                                                     mov     rax, QWORD PTR [rbp-40] # tmpXXX, n
+            mov     edx, DWORD PTR [rax]    # D.XXXX, *n_1X(D)                                              mov     edx, DWORD PTR [rax]    # D.XXXX, *n_1X(D)
+            mov     eax, DWORD PTR c04_[rip+8]      # D.XXXX, c04.ccmore                                    mov     eax, DWORD PTR c04_[rip+8]      # D.XXXX, c04.ccmore
+            add     eax, edx        # D.XXXX, D.XXXX                                                        add     eax, edx        # D.XXXX, D.XXXX
+            lea     edx, [rax-1]    # D.XXXX,                                                               lea     edx, [rax-1]    # D.XXXX,
+
+#### Put [NS] into eax
+
+            mov     eax, DWORD PTR c02_[rip]        # D.XXXX, c02.ns                                        mov     eax, DWORD PTR c02_[rip]        # D.XXXX, c02.ns
+
+#### Compare edx (CCMORE+N-1) to eax (NS); jump to .L5 if edx is greater than eax i.e. if (CCMORE+N-1.LE.NS) is .FALSE.
+
+            cmp     edx, eax        # D.XXXX, D.XXXX                                                        cmp     edx, eax        # D.XXXX, D.XXXX
+            jg      .L5     #,                                                                              jg      .L5     #,
+
+#### Setup arguments to pass to NNCMPR (only N shown here); call NNCMPR; reset stack pointer [sp]
+
+            mov     rdx, QWORD PTR [rbp-40] # tmpXXX, n                                                     mov     rdx, QWORD PTR [rbp-40] # tmpXXX, n
+            [...]
+            call    nncmpr_ #                                                                               call    nncmpr_ #
+            add     rsp, 16 #,                                                                              add     rsp, 16 #,
+
+### NNCMPR puts logical into eax; test it; jump to .L5 if eax is 0 i.e. if NNCMPR returns .FALSE.
+
+            test    eax, eax        # D.XXXX                                                                test    eax, eax        # D.XXXX
+            je      .L5     #,                                                                              je      .L5     #,
+
+### To here, none of the expressions connected by .AND. were .FALSE.; put 1 (.TRUE.) into eaxC and unconditially jump to .L6
+
+            mov     eax, 1  # D.XXXX,                                                                       mov     eax, 1  # D.XXXX,
+            jmp     .L6     #                                                                               jmp     .L6     #
+
+
+#### Target .L5 puts zero (.FALSE.) into register eax; we got here because one of the .AND.-ed cases in line 109 was .FALSE.
+
+    .L5:                                                                                            .L5:
+            mov     eax, 0  # D.XXXX,                                                                       mov     eax, 0  # D.XXXX,
+
+#### Target L6 copies register eax to the NCSCAN result N.B. this will be .FALSE. in our case
+
+    .L6:                                                                                            .L6:
+            mov     DWORD PTR [rbp-4], eax  # __result_ncscan, D.XXXX                                       mov     DWORD PTR [rbp-4], eax  # __result_ncscan, D.XXXX
+
+#### Up to this point, the assembly code from FORTRAN line 109 has been identical between the two cases
+
+#### The FORTRAN code that follows line 109 for the two cases:
+
+    117          IF (.NOT.(NCSCAN)) GO TO 20014                                                   | 125       IF (.NOT.(NCSCAN)) RETURN
+
+#### The FORTRAN code that follows line 109 for the two cases (lines 117 and 125; see above) is at target .LBE2
+
+    .LBE2:                                                                                          .LBE2:
+
+#### The first three instructions are identical:
+1. Copy NCSCAN result to eax => eax=1 or 0 if NCSCAN is .TRUE. or .FALSE, respectively.
+2. XOR eax with 1 => eax=0 or 1 if NCSCAN is .TRUE. or .FALSE., resp.
+3. TEXT eax => eax=0 or 1 if NCSCAN is .TRUE. or .FALSE., resp
+
+            .loc 1 117 0 is_stmt 1 discriminator 8                                                |         .loc 1 125 0 is_stmt 1 discriminator 8
+            mov     eax, DWORD PTR [rbp-4]  # D.XXXX, __result_ncscan                                       mov     eax, DWORD PTR [rbp-4]  # D.XXXX, __result_ncscan
+            xor     eax, 1  # D.XXXX,                                                                       xor     eax, 1  # D.XXXX,
+            test    eax, eax        # D.XXXX                                                                test    eax, eax        # D.XXXX
+
+#### N.B. eax will be the opposite of the NCSCAN result at this point
+
+#### The failing case on the left jumps to .L20 with eax set to 1 if [NHSCAN result] is .FALSE.
+#### The successful case on the right jumps to .L7 with eax set to 0 i.e. if the [NHSCAN result] is .TRUE.
+
+            jne     .L20    #,                                                                    |         je      .L7     #,
+
+### Here is the essential difference for the successful case on the right when the [NHSCAN result] is .FALSE.:
+1. The value of the [NHSCAN result] is moved to eax i.e. eax becomes 0.
+2. The successful case then jumps unconditionally to .L1.
+3. N.B. in the failing case, eax is 0 when the jump to .L20 occurs (see above)
+
+                                                                                                  >         mov     eax, DWORD PTR [rbp-4]  # D.XXXX, __result_ncscan
+                                                                                                  >         jmp     .L1     #
+
+ and drops through to .L7
+
+#### We don't show the code for when eax (__result_ncscan) is .TRUE., because that case is not where we see the discrepancy between G77 and GFORTRAN
+
+    .L7:
+            .loc 1 131 0
+            [...]
+
+#### Targets [.L20 on the left for the failing case] and [.L1 on the right for the successful case] are equivalent and result in a RETURN from NCSCAN
+1. N.B. however, for the case where the [NCSCAN result] was calculated to be .FALSE:
+2. Register eax will be 1 for the failing case on the left, and
+3. Register eax will be 0 for the failing case on the right.
+
+    .L20:                                                                                         | .L1:
+            .loc 1 139 0                                                                          <
+            nop                                                                                   <
+            .loc 1 90 0                                                                           <
+            nop                                                                                   <
+            .loc 1 193 0                                                                                    .loc 1 193 0
+            leave                                                                                           leave
+            .cfi_def_cfa 7, 8                                                                               .cfi_def_cfa 7, 8
+            ret                                                                                             ret
+            .cfi_endproc                                                                                    .cfi_endproc
+
+### FORTRAN lines 90, 117, 139 and 193 are shown again here to show how the failing case gets to its RETURN and END
+
+     90 20009 RETURN
+    117          IF (.NOT.(NCSCAN)) GO TO 20014
+    139 20014 GO TO 20009
+    193       END
