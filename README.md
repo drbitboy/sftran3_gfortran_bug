@@ -61,4 +61,25 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
      FAIL:  NCSCAN says [PARAME].EQ.[SFIELD]
     STOP NCSCAN indicates MATCH when there should be none
 
+## Test environment
 
+### uname -a
+
+    Linux s76dad 4.4.0-157-generic #185-Ubuntu SMP Tue Jul 23 09:17:01 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+### gfortran --version
+
+    GNU Fortran (Ubuntu 5.4.0-6ubuntu1~16.04.11) 5.4.0 20160609
+    Copyright (C) 2015 Free Software Foundation, Inc.
+
+    GNU Fortran comes with NO WARRANTY, to the extent permitted by law.
+    You may redistribute copies of GNU Fortran
+    under the terms of the GNU General Public License.
+    For more information about these matters, see the file named COPYING
+
+## Caveat
+
+Unfortunately, I don't have time at present to debug this and submit a patch to GFORTRAN, which would be my preferred route.
+
+
+Brian Carcich, BrianTCarcich@gmail.com, 2019-08-03
