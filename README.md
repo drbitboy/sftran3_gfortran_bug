@@ -12,7 +12,7 @@ The former command [make run] will produce executables that are both successful.
 
 The latter command [make run MYFFLAGS=] will produce a successful executable with G77, but an unsuccessful executable with GFORTRAN.
 
-In all cases, the code appears to be semantically correct, but in the latter case GFORTRAN generates an executable that returns .TRUE. from logical function NCSCAN when it should return .FALSE.  The flow of the program looks like the following; the key point is the [IF (.NOT.(NCSCAN)) GO TO 20014] statement, which transfers control to 20014 when NCSCAN is .FALSE., which control is then transferred to 20009, which in turn then returns control to the caller, but it returns .TRUE. instead of the correct .FALSE. value when GFORTRAN is the compiler.  Replacing the [GO TO 200014] with [RETURN] makes GFORTRAN comple code that run correctly.
+In all cases, the code appears to be semantically correct, but in the latter case GFORTRAN generates an executable that returns .TRUE. from logical function NCSCAN when it should return .FALSE.  The flow of the program looks like the following; the key point is the [IF (.NOT.(NCSCAN)) GO TO 20014] statement, which transfers control to 20014 when NCSCAN is .FALSE., which control is then transferred to 20009, which in turn then returns control to the caller, but it returns .TRUE. instead of the correct .FALSE. value when GFORTRAN is the compiler.  Replacing the [GO TO 200014] with [RETURN] makes GFORTRAN compile an executable that runs correctly.
 
     LOGICAL FUNCTION NCSCAN(...)
 
