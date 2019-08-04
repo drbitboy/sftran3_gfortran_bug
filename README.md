@@ -33,7 +33,7 @@ In all cases, the code appears to be semantically correct, but in the latter cas
 
 There are four FORTRAN source files in this repository:  bbpas1.f is the main program; ncscan.f contains the code that GFORTRAN compiles incorrectly; batop2.f and nncmpr.f are support files.  Comments in the code explain what is happening; the original sources are from the SFTRAN3 pre-processor itself, and the executable tries to pre-process a single PARAMETER statement, but the details are not important.  What is important to note is that G77 compiles an executable that works correctly, and GFORTRAN does not.
 
-There is a fifth FORTRAN source file:  test_zero.f; see _Minimal test case_ below for details. 
+There is a fifth FORTRAN source file:  test_zero.f; see __Minimal test case__ below for details. 
 
 ## Expected results
 
