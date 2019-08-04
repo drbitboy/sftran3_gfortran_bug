@@ -82,4 +82,4 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
 Unfortunately, I don't have time at present to debug this and submit a patch to GFORTRAN, which would be my preferred route.
 
 
-Brian Carcich, BrianTCarcich@gmail.com, 2019-08-03
+Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
