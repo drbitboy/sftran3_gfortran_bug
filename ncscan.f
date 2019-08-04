@@ -1,4 +1,5 @@
       LOGICAL FUNCTION NCSCAN (IFUNC, STRING, N)
+
 C     Performs scanning functions on the character string in
 C     STMT() in COMMON /CC02/.
 C     Does not change contents of STMT().
@@ -31,18 +32,14 @@ C                                length is 1 or 2 as given by LCCHR.
 C
 C     ------------------------------------------------------------------
 C
-C     Subprograms called: NNCMPR
-C
+C     SUBROUTINEs called: NNCMPR
+
 C     ------------------------------------------------------------------
+
       INTEGER CCNEXT, CCSAVE
-C     CHARACTER GIVEN, C1, STRING(*)
       CHARACTER STRING(*)
-C     LOGICAL NNCMPR, QUOTED
       LOGICAL NNCMPR
-C              DIMENSION STMT() FOR 1334 = 1326 + 1 + 6 + 1 CHARACTERS.
-C                      MAXNS = 1326
-      INTEGER NS,MAXNS
-      PARAMETER( MAXNS=1326)
+      INTEGER NS
       CHARACTER  STMT(1334)
       INTEGER BYTE,CC,CCMORE,LCCHR
       CHARACTER*1 COMCHR(2)
@@ -55,12 +52,11 @@ C
 C     MAIN LOGIC
 C
 C     Lobotomized for testing:  only IFUNC.EQ.2 is supported
-      if (ifunc.ne.2) stop
+      if (IFUNC.NE.2) STOP 'Bad value for IFUNC'
       GO TO 30002
 
 C     Jump target from below for RETURN
-20009 GO TO 20003
-20003 RETURN
+20009 RETURN
 
 C     ------------------------------------------------------------------
 C
@@ -81,7 +77,7 @@ C
 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)
      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)
 
-C     If no match -> 20014 (below) -> 20009 (below) -> 20003 (above) -> return
+C     If no match -> 20014 (below) -> 20009 (above) -> -> RETURN
       IF (.NOT.(NCSCAN)) GO TO 20014
 
 C     Start update of CCMORE and other pointers after scan for next
@@ -89,11 +85,10 @@ C     non-blank character in STMT
       CC=CCMORE
       CCNEXT=CCMORE+N
 
-C     Setup jump back to here, then jump to scan
-C     ASSIGN 20015 TO NPR005
+C     Jump to scan for next token
       GO TO 30005
 
-C     Jump back to here (NPR005 above), then 20009 -> 20003 -> return
+C     Scan jumps back to here (20015), then 20009 (above) -> RETURN
 20015 CONTINUE
 20014 GO TO 20009
 C
@@ -138,16 +133,15 @@ C
 20056 IF(STMT(CCNEXT) .NE. COMCHR(1))THEN
         MORE = .TRUE.
       ELSEIF(LCCHR .EQ. 2)THEN
-      IF(CCNEXT .EQ. NS)THEN
-          MORE = .TRUE.
-      ELSEIF(STMT(CCNEXT+1) .NE. COMCHR(2))THEN
-          MORE = .TRUE.
-      END IF
+         IF(CCNEXT .EQ. NS)THEN
+            MORE = .TRUE.
+         ELSEIF(STMT(CCNEXT+1) .NE. COMCHR(2))THEN
+            MORE = .TRUE.
+         END IF
       END IF
       IF (MORE) CCMORE = CCNEXT
-C1005 GO TO NPR005,(20012,20015,20037,20055)
+
+C     Jump back to line above where jump to 30005 occured
 31005 GO TO 20015
-C
-C     ------------------------------------------------------------------
-C
+
       END

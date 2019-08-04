@@ -3,7 +3,7 @@
 
 C     ------------------------------------------------------------------
 C
-C SIMULATE FINDING SFTRAN STATEMENTS
+C SIMULATE FINDING SFTRAN3 STATEMENTS
 C     Method of doing initial scan, for first non-blank token at or
 C     after column 7, will be to look for one of 21 keywords using
 C     hashing to cut down on the amount of searching.
@@ -81,8 +81,7 @@ C
       CHARACTER*1 KEYTAB(68)
       integer ml
       PARAMETER (ML=66)
-      INTEGER NS,MAXNS
-      PARAMETER( MAXNS=1326)
+      INTEGER NS
       CHARACTER  STMT(1334)
       INTEGER BYTE,CC,CCMORE,LCCHR
       CHARACTER*1 COMCHR(2)
