@@ -243,3 +243,8 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
     117          IF (.NOT.(NCSCAN)) GO TO 20014
     139 20014 GO TO 20009
     193       END
+
+## Summary
+
+1. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the left correctly returns .TRUE. via register eax to the caller.
+2. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the right incorrectly returns .FALSE. via register eax to the caller.
