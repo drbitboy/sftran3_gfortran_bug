@@ -237,7 +237,7 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
             ret                                                                                             ret
             .cfi_endproc                                                                                    .cfi_endproc
 
-### FORTRAN lines 90, 117, 139 and 193 are shown again here to show how the failing case gets to its RETURN and END
+### FORTRAN lines 90, 117, 139 and 193 are shonw here so the user can track how the failing case gets to  RETURN and END for NHSCAN.
 
      90 20009 RETURN
     117          IF (.NOT.(NCSCAN)) GO TO 20014
