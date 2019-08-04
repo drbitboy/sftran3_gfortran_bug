@@ -35,7 +35,7 @@ SRCS=bbpas1.f batop2.f ncscan.f nncmpr.f
 
 ########################################################################
 ### Default target compiles G77 and GFORTRAN executables
-all: y_g77 y_gfortran
+all: y_g77 y_gfortran test_zero_g77 test_zero_gfortran
 
 
 ### The [run] target compiles and runs both executables
@@ -44,6 +44,10 @@ run: all
 	-./y_g77.e
 	@echo ""
 	-./y_gfortran.e
+	@echo ""
+	-./test_zero_g77.e
+	@echo ""
+	-./test_zero_gfortran.e
 	@echo ""
 
 
@@ -55,5 +59,11 @@ y_g77:
 
 y_gfortran:
 	gfortran -cpp -std=legacy $(FFLAGS) $(gfortran_FFLAGS) $(SRCS) -o $@.e
+
+test_zero_g77:
+	g77 -x f77-cpp-input $(FFLAGS) $(@:%_g77=%.f) -o $@.e $(g77_FLIBS)
+
+test_zero_gfortran:
+	gfortran -cpp -std=legacy $(FFLAGS) $(@:%_gfortran=%.f) $(gfortran_FFLAGS) -o $@.e
 
 ########################################################################

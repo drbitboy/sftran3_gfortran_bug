@@ -97,6 +97,10 @@ Unfortunately, I don't have time at present to fully debug this and submit a pat
 
 Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
 
+# Minimal test case
+
+There is a minimal test case in test_zero.f; it should print [F = ...] twice when run, and it does when compiled with G77; however it does not when compiled with GFORTRAN.
+
 # Analysis
 
 ## Parallel diff of assembly code for failing vs. successful cases
