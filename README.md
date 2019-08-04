@@ -31,4 +31,4 @@ In all cases, the code appears to be semantically correct, but in the latter cas
           [...]
     20014 GO TO 20009
 
-There are four FORTRAN source files in this repository:  bbpas1.f is the main program; ncscan.f contains the code that GFORTRAN compiles incorrectly; batop2.f and nncmpr.f are support files.  Comments in the code explain what is happening; the original sources are from the SFTRAN3 pre-processor itself, and the executable tries to pre-process a single PARAMETER statement, but the details are not important.  What is important to note is that G77 compiles and executable that works correctly, and GFORTRAN does not.
+There are four FORTRAN source files in this repository:  bbpas1.f is the main program; ncscan.f contains the code that GFORTRAN compiles incorrectly; batop2.f and nncmpr.f are support files.  Comments in the code explain what is happening; the original sources are from the SFTRAN3 pre-processor itself, and the executable tries to pre-process a single PARAMETER statement, but the details are not important.  What is important to note is that G77 compiles an executable that works correctly, and GFORTRAN does not.
