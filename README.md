@@ -48,6 +48,14 @@ There are four FORTRAN source files in this repository:  bbpas1.f is the main pr
     ./y_gfortran.e
      OKAY:  NCSCAN says [PARAME].NE.[SFIELD]
 
+    ./test_zero_g77.e
+     F = zero from inside callee zero
+     F = lcl_zero<=zero() from caller test_zero
+
+    ./test_zero_gfortran.e
+     F  = zero from inside callee zero
+     T  = lcl_zero<=zero() from caller test_zero
+
 ### Running with macro disabled so GFORTRAN executable fails
 
     > make run MYFFLAGS=
