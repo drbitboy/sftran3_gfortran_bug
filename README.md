@@ -224,6 +224,7 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
 2. Register eax will be 1 for the failing case on the left, and
 3. Register eax will be 0 for the failing case on the right.
 
+#### ...
 
     .L20:                                                                                         ! .L1:
             .loc 1 139 0                                                                          <
