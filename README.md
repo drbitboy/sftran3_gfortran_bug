@@ -32,3 +32,33 @@ In all cases, the code appears to be semantically correct, but in the latter cas
     20014 GO TO 20009
 
 There are four FORTRAN source files in this repository:  bbpas1.f is the main program; ncscan.f contains the code that GFORTRAN compiles incorrectly; batop2.f and nncmpr.f are support files.  Comments in the code explain what is happening; the original sources are from the SFTRAN3 pre-processor itself, and the executable tries to pre-process a single PARAMETER statement, but the details are not important.  What is important to note is that G77 compiles an executable that works correctly, and GFORTRAN does not.
+
+
+## Expected results
+
+### Running with macro in place so GFORTRAN executable works correctly
+
+    > make run
+    g77 -x f77-cpp-input -g -O0 -finit-local-zero -fno-automatic -DARGRTN=1 bbpas1.f batop2.f ncscan.f nncmpr.f -o y_g77.e -B/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/5
+    gfortran -cpp -std=legacy -g -O0 -finit-local-zero -fno-automatic -DARGRTN=1 bbpas1.f batop2.f ncscan.f nncmpr.f -o y_gfortran.e
+
+    ./y_g77.e
+     OKAY:  NCSCAN says [PARAME].NE.[SFIELD]
+
+    ./y_gfortran.e
+     OKAY:  NCSCAN says [PARAME].NE.[SFIELD]
+
+### Running with macro disabled so GFORTRAN executable fails
+
+    > make run MYFFLAGS=
+    g77 -x f77-cpp-input -g -O0 -finit-local-zero -fno-automatic  bbpas1.f batop2.f ncscan.f nncmpr.f -o y_g77.e -B/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/5
+    gfortran -cpp -std=legacy -g -O0 -finit-local-zero -fno-automatic  bbpas1.f batop2.f ncscan.f nncmpr.f -o y_gfortran.e
+
+    ./y_g77.e
+     OKAY:  NCSCAN says [PARAME].NE.[SFIELD]
+
+    ./y_gfortran.e
+     FAIL:  NCSCAN says [PARAME].EQ.[SFIELD]
+    STOP NCSCAN indicates MATCH when there should be none
+
+

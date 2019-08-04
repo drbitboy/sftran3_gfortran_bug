@@ -7,41 +7,51 @@
 ###
 ########################################################################
 
+
+### This MYFFLAGS assignment creates a CPP macro definition to make
+### GFORTRAN produce correct code
+### - Use [make MYFFLAGS= ...] to turn it off
+
 MYFFLAGS=-DARGRTN=1
+
+
+### FORTRAN flags
 
 FFLAGS = -g -O0 -finit-local-zero -fno-automatic $(MYFFLAGS)
 
+
+### I need these FLIBS options to link with G77 on my system;
+### you may need to comment  mileage may vary
+
 g77_FLIBS=-B/usr/lib/x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/5
+
+
+### Source files
 
 SRCS=bbpas1.f batop2.f ncscan.f nncmpr.f
 
-all: y_g77 y_gfortran
-#all: y_g77 y_fort77 y_gfortran y_f77 y_f95
 
+########################################################################
+### Default target compiles G77 and GFORTRAN executables
+all: y_g77 y_gfortran
+
+
+### The [run] target compiles and runs both executables
 run: all
 	@echo ""
 	-./y_g77.e
-	@#@echo ""
-	@#-./y_fort77.e
-	@#@echo ""
-	@#-./y_f77.e
 	@echo ""
 	-./y_gfortran.e
-	@#@echo ""
-	@#-./y_f95.e
 	@echo ""
+
+
+########################################################################
+### These targets build the individual executables
 
 y_g77:
 	g77 -x f77-cpp-input $(FFLAGS) $(SRCS) -o $@.e $(g77_FLIBS)
 
-y_fort77:
-	fort77 $(FFLAGS) $(SRCS) -o $@.e
-
-y_f77:
-	f77 -std=legacy $(FFLAGS) $(SRCS) -o $@.e
-
 y_gfortran:
 	gfortran -cpp -std=legacy $(FFLAGS) $(SRCS) -o $@.e
 
-y_f95:
-	f95 $(FFLAGS) $(SRCS) -o $@.e
+########################################################################
