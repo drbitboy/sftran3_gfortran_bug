@@ -126,12 +126,12 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
             .loc 1 30 0                                                                                     .loc 1 30 0
             mov     eax, DWORD PTR c04_[rip+16]     # D.XXXX, c04.more                                      mov     eax, DWORD PTR c04_[rip+16]     # D.XXXX, c04.more
 
-#### Test eax (AND eax with itself, jump to .L5 if eax, i.e. [more], is .FALSE.
+#### Test eax (AND eax with itself); jump to .L5 if eax ends up as zero after that, i.e. [more], is .FALSE.
 
             test    eax, eax        # D.XXXX                                                                test    eax, eax        # D.XXXX
             je      .L5     #,                                                                              je      .L5     #,
 
-#### Put [CCMORE+N-1] into edx
+#### Evaluate the expression [CCMORE+N-1] into register edx
 
             mov     rax, QWORD PTR [rbp-40] # tmpXXX, n                                                     mov     rax, QWORD PTR [rbp-40] # tmpXXX, n
             mov     edx, DWORD PTR [rax]    # D.XXXX, *n_1X(D)                                              mov     edx, DWORD PTR [rax]    # D.XXXX, *n_1X(D)
@@ -143,7 +143,7 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
 
             mov     eax, DWORD PTR c02_[rip]        # D.XXXX, c02.ns                                        mov     eax, DWORD PTR c02_[rip]        # D.XXXX, c02.ns
 
-#### Compare edx (CCMORE+N-1) to eax (NS); jump to .L5 if edx is greater than eax i.e. if (CCMORE+N-1.LE.NS) is .FALSE.
+#### Compare edx [CCMORE+N-]) to eax [NS]; jump to .L5 if edx [CCMORE+n-1] is greater than eax [NS] i.e. if the expression [CCMORE+N-1.LE.NS] is .FALSE.
 
             cmp     edx, eax        # D.XXXX, D.XXXX                                                        cmp     edx, eax        # D.XXXX, D.XXXX
             jg      .L5     #,                                                                              jg      .L5     #,
@@ -160,13 +160,13 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
             test    eax, eax        # D.XXXX                                                                test    eax, eax        # D.XXXX
             je      .L5     #,                                                                              je      .L5     #,
 
-### To here, none of the expressions connected by .AND. were .FALSE.; put 1 (.TRUE.) into eaxC and unconditially jump to .L6
+### To here, none of the expressions connected by .AND. were .FALSE.; put 1 (.TRUE.) into eax and unconditially jump to .L6
 
             mov     eax, 1  # D.XXXX,                                                                       mov     eax, 1  # D.XXXX,
             jmp     .L6     #                                                                               jmp     .L6     #
 
 
-#### Target .L5 puts zero (.FALSE.) into register eax; we got here because one of the .AND.-ed cases in line 109 was .FALSE.
+#### Target .L5 puts zero (.FALSE.) into register eax; we got here because at least one of the .AND.-ed expressions in line 109 was .FALSE.
 
     .L5:                                                                                            .L5:
             mov     eax, 0  # D.XXXX,                                                                       mov     eax, 0  # D.XXXX,
@@ -182,7 +182,7 @@ Brian Carcich, Latchmoor Services, LLC, BrianTCarcich@gmail.com, 2019-08-03
 
     117          IF (.NOT.(NCSCAN)) GO TO 20014                                                   | 125       IF (.NOT.(NCSCAN)) RETURN
 
-#### The FORTRAN code that follows line 109 for the two cases (lines 117 and 125; see above) is at target .LBE2
+#### Those lines of FORTRAN code are at target .LBE2
 
     .LBE2:                                                                                          .LBE2:
 
