@@ -235,11 +235,11 @@ There is a minimal test case in test_zero.f; it should print [F = ...] twice whe
 #### Targets [.L20 on the left for the failing case] and [.L1 on the right for the successful case] are equivalent and result in a RETURN from NCSCAN
 1. N.B. however, for the case where the [NCSCAN result] was calculated to be .FALSE:
 2. Register eax will be 1 for the failing case on the left, and
-3. Register eax will be 0 for the failing case on the right.
+3. Register eax will be 0 for the successful case on the right.
 
 #### ...
 
-    .L20:                                                                 ! .L1:
+    .L20:                                                                 | .L1:
             .loc 1 139 0                                                  <
             nop                                                           <
             .loc 1 90 0                                                   <
@@ -260,5 +260,5 @@ There is a minimal test case in test_zero.f; it should print [F = ...] twice whe
 
 ## Summary
 
-1. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the left correctly returns .TRUE. via register eax to the caller.
-2. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the right incorrectly returns .FALSE. via register eax to the caller.
+1. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the left incorrectly returns .TRUE. via register eax to the caller.
+2. When the [NCSCAN result] is calculated as .FALSE. on line 109 of ncscan.f, the GFORTRAN-compiled code on the right correctly returns .FALSE. via register eax to the caller.
