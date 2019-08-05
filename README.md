@@ -202,7 +202,7 @@ There is a minimal test case in test_zero.f; it should print [F = ...] twice whe
 #### The first three instructions are identical:
 1. Copy NCSCAN result to eax => eax=1 or 0 if NCSCAN is .TRUE. or .FALSE, respectively.
 2. XOR eax with 1 => eax=0 or 1 if NCSCAN is .TRUE. or .FALSE., resp.
-3. TEXT eax => eax=0 or 1 if NCSCAN is .TRUE. or .FALSE., resp
+3. TEST eax => eax=0 or 1 if NCSCAN is .TRUE. or .FALSE., resp
 
             .loc 1 117 0 is_stmt 1 discriminator 8                        |         .loc 1 125 0 is_stmt 1 discriminator 8
             mov     eax, DWORD PTR [rbp-4]  # D.XXXX, __result_ncscan               mov     eax, DWORD PTR [rbp-4]  # D.XXXX, __result_ncscan
