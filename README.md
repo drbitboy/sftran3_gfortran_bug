@@ -122,8 +122,8 @@ There is a minimal test case in test_zero.f; it should print [F = ...] twice whe
 ### Relevant sections of FORTRAN code from ncscan.f
 
 
-    108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)                                                108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)
-    109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)                                    109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)
+    108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)                        108 30002 NCSCAN = MORE .AND. (CCMORE+N-1.LE.NS)
+    109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)            109      *              .AND. NNCMPR(STRING,1,STMT,CCMORE,N)
 
 
     117          IF (.NOT.(NCSCAN)) GO TO 20014                           | 125       IF (.NOT.(NCSCAN)) RETURN
